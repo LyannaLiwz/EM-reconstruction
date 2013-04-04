@@ -1,5 +1,5 @@
 function [fftImage] = fftreconst3d(R,theta)
-% FFTRECST - Computed tomography reconstrction 3D
+% FFTRECST3D - Computed tomography reconstrction 3D
 %   This function takes the projected slices and projection theta angles
 %   to reconstruct the original data in 3D.
 %   
