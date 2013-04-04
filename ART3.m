@@ -1,38 +1,27 @@
-% Set up 3D test image
-% load the 3D image of size 100
-V = tom_emread();
-value = V.Value;
+function [Xx] = ART3(A,R,lambda,k)
+% ART3 -  Algebraic Reconstruction Technique (ART) method in 3D images
+%   it reconstruct the 3D image using ART 
 
-% parameters
-[v_length, v_width,v_height] = size(value);
+% parameter:
+%   A, SystemMatrix
+%   R, projection
+%   lambda, constance
+%   k, iteration times
+%   Xx, result
 
-theta = 0:5:179;
-R = zeros(size(value,1), size(value,1),length(theta));
 
-% take 36 projections
-for i = 1:length(theta)
-    %rotate matrix
-    rotated_img = tom_rotate(value, [270,90,-theta(i)], 'linear');
-    R(:,:,i) = sum(rotated_img);
-end
-
+[v_length,v_width,length_theta] = size(R);
+v_height = v_width;
 X = zeros(v_length, v_width,v_height); 
-[A] = SystemMatrix(v_width,theta);
 
 % for each projection angle
-b = zeros(v_width,length(theta));
+b = zeros(v_width,length_theta);
 for j = 1:v_height
-    for i = 1:length(theta)
+    for i = 1:length_theta
         b(:,i) = R(j,:,i);
     end
-    %Xkacz = ART2(A,b(:),0.25,2);
-    Xkacz = SIRT2(A,b(:),50);
+    Xkacz = ART2(A,b(:),lambda,k);
     X(:,:,j) = reshape(Xkacz,v_length,v_width);
 end
 Xx = tom_rotate(X,[0,0,-90],'linear');
 Xx = tom_rotate(Xx,[270,90,180],'linear');
-tom_volxyz(Xx);
-%figure(3); tom_imagesc(reshape(Xkacz,v_length,v_width));
-        
-
-
